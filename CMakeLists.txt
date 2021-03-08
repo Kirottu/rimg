@@ -2,8 +2,19 @@ cmake_minimum_required(VERSION 3.11)
 project(rimg)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory("3rdparty/raylib")
+set(CMAKE_C_STANDARD 99)
 
+set(CUSTOMIZE_BUILD ON)
+
+set(SUPPORT_FILEFORMAT_BMP ON)
+set(SUPPORT_FILEFORMAT_TGA ON)
+set(SUPPORT_FILEFORMAT_JPG ON)
+set(SUPPORT_FILEFORMAT_GIF ON)
+set(SUPPORT_FILEFORMAT_PSD ON)
+set(SUPPORT_FILEFORMAT_PKM ON)
+set(SUPPORT_FILEFORMAT_PVR ON)
+
+add_subdirectory("3rdparty/raylib")
 
 file(GLOB MY_SOURCES 
   "src/*.c" 
