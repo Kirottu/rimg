@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
+void PrintHelp()
+{
+  printf("Usage: rimg [--bg] <path to image>\n\n--bg: Set the background color, possible values: black, white\n--help | -h: Show this help message\n");
+}
+
 int main(int argc, char* argv[])
 {
   int imagePathIndex;
@@ -11,16 +16,22 @@ int main(int argc, char* argv[])
   // Different arguments for the program
   if (argc < 2) // Make sure at least something is inputted
   {
-    printf("No arguments provided\n");
+    PrintHelp();
     return 1;
   }
   if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")) // Help output
   {
-    printf("Usage: rimg [--bg] <path to image>\n\n--bg: Set the background color, possible values: black, white\n");
+    PrintHelp();
     return 0;
   }
-  else if (!strcmp(argv[1], "--bg") && argc == 4) // BG color setting arguments, making sure there are enough arguments
+  else if (!strcmp(argv[1], "--bg")) // BG color setting arguments, making sure there are enough arguments
   {
+    if (argc == 2)
+    {
+      printf("No color input\n\n");
+      PrintHelp();
+      return 1;
+    }
     // Different color options
     if (!strcmp(argv[2], "black"))
     {
@@ -30,12 +41,13 @@ int main(int argc, char* argv[])
     {
       bgColor = WHITE;
     }
+    else
+    {
+      printf("Invalid color input\n\n");
+      PrintHelp();
+      return 1;
+    }
     imagePathIndex = 3; // Setting the index for what string to read from argv to load image from
-  }
-  else if (!strcmp(argv[1], "--bg") && argc == 3)
-  {
-    printf("Missing arguments");
-    return 1;
   }
   else // In case no other arguments exist, just get the image from argv[1]
   {
