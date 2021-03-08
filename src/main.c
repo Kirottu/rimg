@@ -4,7 +4,12 @@
 
 void PrintHelp()
 {
-  printf("Usage: rimg [--bg] <path to image>\n\n--bg: Set the background color, possible values: black, white\n--help | -h: Show this help message\n");
+  printf("Usage: rimg [--bg] <path to image>\n\n");
+  printf("--bg        : Set the background color, possible values: black, white, lightgray, gray, darkgray\n");
+  printf("--help | -h : Show this help message\n\n");
+  printf("Keybinds:\n\n");
+  printf("Up Arrow    : Zoom in 10%%\n");
+  printf("Down Arrow  : Zoom out 10%%\n");
 }
 
 int main(int argc, char* argv[])
@@ -12,6 +17,10 @@ int main(int argc, char* argv[])
   int imagePathIndex;
   Color bgColor = BLACK;
   Texture2D image;
+  float zoomFactor = 1;
+  float minZoomFactor = 0.1;
+  float maxZoomFactor = 10;
+  float zoomFactorStep = 0.1;
 
   // Different arguments for the program
   if (argc < 2) // Make sure at least something is inputted
@@ -41,6 +50,18 @@ int main(int argc, char* argv[])
     {
       bgColor = WHITE;
     }
+    else if (!strcmp(argv[2], "lightgray"))
+    {
+      bgColor = LIGHTGRAY;
+    }
+    else if (!strcmp(argv[2], "gray"))
+    {
+      bgColor = GRAY;
+    }
+    else if (!strcmp(argv[2], "darkgray"))
+    {
+      bgColor = DARKGRAY;
+    }
     else
     {
       printf("Invalid color input\n\n");
@@ -53,20 +74,39 @@ int main(int argc, char* argv[])
   {
     imagePathIndex = 1; 
   }
-
+  
+  // Creating the main window
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(1280, 720, "rImg");
   
+  // Loading the image specified with the path
   Image imageImage = LoadImage(argv[imagePathIndex]);
   image = LoadTextureFromImage(imageImage);
   UnloadImage(imageImage);
 
   while (!WindowShouldClose())
   {
+    // Zooming controls
+    if (IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor)
+    {
+      zoomFactor += zoomFactorStep;
+    }
+    if (IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor)
+    {
+      zoomFactor -= zoomFactorStep;
+    }
+
     BeginDrawing();
-      ClearBackground(bgColor);
-      
-      DrawTexture(image, (GetScreenWidth() - image.width) / 2, (GetScreenHeight() - image.height) / 2, WHITE);
+      ClearBackground(bgColor); // Set the background as the specified color
+     
+      // Draw the image with the correct zoom factor
+      DrawTexturePro(
+          image, 
+          (Rectangle) {0, 0, image.width, image.height}, 
+          (Rectangle) {(GetScreenWidth() - image.width * zoomFactor) / 2, (GetScreenHeight() - image.height * zoomFactor) / 2, image.width * zoomFactor, image.height * zoomFactor}, 
+          (Vector2) {0, 0},
+          0, WHITE
+      );
     EndDrawing();
   }
 }
