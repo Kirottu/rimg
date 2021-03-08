@@ -14,9 +14,10 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
-  int imagePathIndex;
-  Color bgColor = BLACK;
+  int imagePathIndex; // Varibale to store the index of the path in argv[] that will be used for the image
+  Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
+  // Zooming related values
   float zoomFactor = 1;
   float minZoomFactor = 0.1;
   float maxZoomFactor = 10;
@@ -42,6 +43,7 @@ int main(int argc, char* argv[])
       return 1;
     }
     // Different color options
+    // God I wish one could switch on strings in C
     if (!strcmp(argv[2], "black"))
     {
       bgColor = BLACK;
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
   {
     imagePathIndex = 1; 
   }
-  
+
   // Creating the main window
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(1280, 720, "rImg");
@@ -95,7 +97,7 @@ int main(int argc, char* argv[])
     {
       zoomFactor -= zoomFactorStep;
     }
-
+      
     BeginDrawing();
       ClearBackground(bgColor); // Set the background as the specified color
      
@@ -107,7 +109,7 @@ int main(int argc, char* argv[])
           (Vector2) {0, 0},
           0, WHITE
       );
+    
     EndDrawing();
   }
 }
-
