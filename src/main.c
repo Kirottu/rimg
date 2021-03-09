@@ -9,12 +9,15 @@ void PrintHelp()
   printf("--bg        : Set the background color, possible values: black, white, lightgray, gray, darkgray\n");
   printf("--help | -h : Show this help message\n\n");
   printf("Keybinds:\n\n");
+  printf("Escape             : Exit the program");
   printf("Ctrl + Up Arrow    : Zoom in 10%%\n");
   printf("Ctrl + Down Arrow  : Zoom out 10%%\n");
-  printf("Up Arrow      : Pan up\n");
-  printf("Down Arrow    : Pan down\n");
-  printf("Left Arrow    : Pan left\n");
-  printf("Right Arrow   : Pan right\n");
+  printf("Ctrl + 0           : Reset zoom\n");
+  printf("Up Arrow           : Pan up\n");
+  printf("Down Arrow         : Pan down\n");
+  printf("Left Arrow         : Pan left\n");
+  printf("Right Arrow        : Pan right\n");
+  printf("Ctrl + P           : Reset pan\n");
 }
 
 int main(int argc, char* argv[])
@@ -106,13 +109,13 @@ int main(int argc, char* argv[])
     float deltaTime = GetFrameTime();
 
     // Zooming controls
-    if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor)
+    if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)))
     {
-      zoomFactor += zoomFactorStep;
-    }
-    else if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor)
-    {
-      zoomFactor -= zoomFactorStep;
+      if (IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor) zoomFactor += zoomFactorStep;
+      if (IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor) zoomFactor -= zoomFactorStep;
+      if (IsKeyPressed(KEY_ZERO)) zoomFactor = 1;
+      
+      if (IsKeyPressed(KEY_P)) camera.target = (Vector2) {0, 0};
     }
     else // Enable panning controls if neither zoom modifier was used
     {
@@ -132,13 +135,19 @@ int main(int argc, char* argv[])
     BeginDrawing();
       ClearBackground(bgColor); // Set the background as the specified color
       BeginMode2D(camera); // Use the 2D camera for panning and zooming
-      // Draw the image with the correct zoom factor
-        DrawTexturePro(
+        
+        DrawTexturePro( // Draw the image with the correct zoom factor
             image, 
             (Rectangle) {0, 0, image.width, image.height}, 
-            (Rectangle) {(GetScreenWidth() - image.width * zoomFactor) / 2, (GetScreenHeight() - image.height * zoomFactor) / 2, image.width * zoomFactor, image.height * zoomFactor}, 
+            (Rectangle) {
+                (GetScreenWidth() - image.width * zoomFactor) / 2, 
+                (GetScreenHeight() - image.height * zoomFactor) / 2, 
+                image.width * zoomFactor, 
+                image.height * zoomFactor
+            }, 
             (Vector2) {0, 0},
-            0, WHITE
+            0, 
+            WHITE
         );
       EndMode2D();
     EndDrawing();
