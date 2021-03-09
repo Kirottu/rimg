@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 
 void PrintHelp()
@@ -13,6 +14,7 @@ void PrintHelp()
   printf("Ctrl + Up Arrow    : Zoom in 10%%\n");
   printf("Ctrl + Down Arrow  : Zoom out 10%%\n");
   printf("Ctrl + 0           : Reset zoom\n");
+  printf("Ctrl + Z           : Automatically fit image\n");
   printf("Up Arrow           : Pan up\n");
   printf("Down Arrow         : Pan down\n");
   printf("Left Arrow         : Pan left\n");
@@ -22,11 +24,10 @@ void PrintHelp()
 
 int main(int argc, char* argv[])
 {
-  int imagePathIndex; // Varibale to store the index of the path in argv[] that will be used for the image
+  int imagePathIndex = 1; // Varibale to store the index of the path in argv[] that will be used for the image
   Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
   Camera2D camera;
-  
 
   // Initial values for the camera
   camera.zoom = 1;
@@ -42,9 +43,6 @@ int main(int argc, char* argv[])
   
   float panSpeed = 1000;
   
-  bool flipH = false;
-  bool flipV = false;
-
   // Different arguments for the program
   if (argc < 2) // Make sure at least something is inputted
   {
@@ -94,6 +92,15 @@ int main(int argc, char* argv[])
     }
     imagePathIndex = 3; // Setting the index for what string to read from argv to load image from
   }
+  else if (!strcmp(argv[1], "--arte"))
+  {
+    for (int i = 0; i < 69; i++)
+    {
+      printf("ARTE OMEGA GEH\n");
+      sleep(1); 
+    }
+    return 0;
+  }
   else // In case no other arguments exist, just get the image from argv[1]
   {
     imagePathIndex = 1; 
@@ -114,17 +121,26 @@ int main(int argc, char* argv[])
   {
     float deltaTime = GetFrameTime();
 
-    // Zooming controls
+    // Several keycombos using the Ctrl modifier
     if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)))
     {
+      // Zooming control
       if (IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor) zoomFactor += zoomFactorStep;
       if (IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor) zoomFactor -= zoomFactorStep;
       if (IsKeyPressed(KEY_ZERO)) zoomFactor = 1;
       
+      // Reset camera panning
       if (IsKeyPressed(KEY_P)) camera.target = (Vector2) {0, 0};
 
+      // Image flipping
       if (IsKeyPressed(KEY_H)) srcRect.width = -srcRect.width;
       if (IsKeyPressed(KEY_V)) srcRect.height = -srcRect.height;
+      
+      // Autofitting image to the window
+      if (IsKeyPressed(KEY_Z))
+      {
+
+      }
     }
     else // Enable panning controls if neither zoom modifier was used
     {
