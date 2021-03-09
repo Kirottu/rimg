@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -8,8 +9,12 @@ void PrintHelp()
   printf("--bg        : Set the background color, possible values: black, white, lightgray, gray, darkgray\n");
   printf("--help | -h : Show this help message\n\n");
   printf("Keybinds:\n\n");
-  printf("Up Arrow    : Zoom in 10%%\n");
-  printf("Down Arrow  : Zoom out 10%%\n");
+  printf("Ctrl + Up Arrow    : Zoom in 10%%\n");
+  printf("Ctrl + Down Arrow  : Zoom out 10%%\n");
+  printf("Up Arrow      : Pan up\n");
+  printf("Down Arrow    : Pan down\n");
+  printf("Left Arrow    : Pan left\n");
+  printf("Right Arrow   : Pan right\n");
 }
 
 int main(int argc, char* argv[])
@@ -17,11 +22,21 @@ int main(int argc, char* argv[])
   int imagePathIndex; // Varibale to store the index of the path in argv[] that will be used for the image
   Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
+  Camera2D camera;
+  
+  // Initial values for the camera
+  camera.zoom = 1;
+  camera.rotation = 0;
+  camera.target = (Vector2) {0, 0};
+  camera.offset = (Vector2) {0, 0};
+
   // Zooming related values
   float zoomFactor = 1;
   float minZoomFactor = 0.1;
   float maxZoomFactor = 10;
   float zoomFactorStep = 0.1;
+  
+  float panSpeed = 1000;
 
   // Different arguments for the program
   if (argc < 2) // Make sure at least something is inputted
@@ -88,28 +103,44 @@ int main(int argc, char* argv[])
 
   while (!WindowShouldClose())
   {
+    float deltaTime = GetFrameTime();
+
     // Zooming controls
-    if (IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor)
+    if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_UP) && zoomFactor < maxZoomFactor)
     {
       zoomFactor += zoomFactorStep;
     }
-    if (IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor)
+    else if ((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyPressed(KEY_DOWN) && zoomFactor > minZoomFactor)
     {
       zoomFactor -= zoomFactorStep;
+    }
+    else // Enable panning controls if neither zoom modifier was used
+    {
+      Vector2 input = {0, 0};
+
+      input.y -= IsKeyDown(KEY_UP);
+      input.y += IsKeyDown(KEY_DOWN);
+      input.x -= IsKeyDown(KEY_LEFT);
+      input.x += IsKeyDown(KEY_RIGHT);
+
+      input = Vector2Scale(input, panSpeed * deltaTime);
+      
+      camera.target.x += input.x;
+      camera.target.y += input.y;
     }
       
     BeginDrawing();
       ClearBackground(bgColor); // Set the background as the specified color
-     
+      BeginMode2D(camera); // Use the 2D camera for panning and zooming
       // Draw the image with the correct zoom factor
-      DrawTexturePro(
-          image, 
-          (Rectangle) {0, 0, image.width, image.height}, 
-          (Rectangle) {(GetScreenWidth() - image.width * zoomFactor) / 2, (GetScreenHeight() - image.height * zoomFactor) / 2, image.width * zoomFactor, image.height * zoomFactor}, 
-          (Vector2) {0, 0},
-          0, WHITE
-      );
-    
+        DrawTexturePro(
+            image, 
+            (Rectangle) {0, 0, image.width, image.height}, 
+            (Rectangle) {(GetScreenWidth() - image.width * zoomFactor) / 2, (GetScreenHeight() - image.height * zoomFactor) / 2, image.width * zoomFactor, image.height * zoomFactor}, 
+            (Vector2) {0, 0},
+            0, WHITE
+        );
+      EndMode2D();
     EndDrawing();
   }
 }
