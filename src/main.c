@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
   Camera2D camera;
-  RenderTexture2D target;
+  
 
   // Initial values for the camera
   camera.zoom = 1;
@@ -103,20 +103,15 @@ int main(int argc, char* argv[])
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(1280, 720, "rImg");
   
-  target = LoadRenderTexture(1280, 720);
-
   // Loading the image specified with the path
   Image imageImage = LoadImage(argv[imagePathIndex]);
   image = LoadTextureFromImage(imageImage);
   UnloadImage(imageImage);
+  
+  Rectangle srcRect = {0, 0, image.width, image.height};
 
   while (!WindowShouldClose())
   {
-    if (IsWindowResized())
-    {
-      target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-    }
-
     float deltaTime = GetFrameTime();
 
     // Zooming controls
@@ -128,8 +123,8 @@ int main(int argc, char* argv[])
       
       if (IsKeyPressed(KEY_P)) camera.target = (Vector2) {0, 0};
 
-      if (IsKeyPressed(KEY_H)) flipH = !flipH;
-      if (IsKeyPressed(KEY_V)) flipV = !flipV;
+      if (IsKeyPressed(KEY_H)) srcRect.width = -srcRect.width;
+      if (IsKeyPressed(KEY_V)) srcRect.height = -srcRect.height;
     }
     else // Enable panning controls if neither zoom modifier was used
     {
@@ -152,7 +147,7 @@ int main(int argc, char* argv[])
 
         DrawTexturePro( // Draw the image with the correct zoom factor
             image, 
-            (Rectangle) {0, 0, image.width, image.height}, 
+            srcRect,
             (Rectangle) {
                 (GetScreenWidth() - image.width * zoomFactor) / 2, 
                 (GetScreenHeight() - image.height * zoomFactor) / 2, 
