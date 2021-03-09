@@ -26,7 +26,8 @@ int main(int argc, char* argv[])
   Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
   Camera2D camera;
-  
+  RenderTexture2D target;
+
   // Initial values for the camera
   camera.zoom = 1;
   camera.rotation = 0;
@@ -40,6 +41,9 @@ int main(int argc, char* argv[])
   float zoomFactorStep = 0.1;
   
   float panSpeed = 1000;
+  
+  bool flipH = false;
+  bool flipV = false;
 
   // Different arguments for the program
   if (argc < 2) // Make sure at least something is inputted
@@ -99,6 +103,8 @@ int main(int argc, char* argv[])
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
   InitWindow(1280, 720, "rImg");
   
+  target = LoadRenderTexture(1280, 720);
+
   // Loading the image specified with the path
   Image imageImage = LoadImage(argv[imagePathIndex]);
   image = LoadTextureFromImage(imageImage);
@@ -106,6 +112,11 @@ int main(int argc, char* argv[])
 
   while (!WindowShouldClose())
   {
+    if (IsWindowResized())
+    {
+      target = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    }
+
     float deltaTime = GetFrameTime();
 
     // Zooming controls
@@ -116,6 +127,9 @@ int main(int argc, char* argv[])
       if (IsKeyPressed(KEY_ZERO)) zoomFactor = 1;
       
       if (IsKeyPressed(KEY_P)) camera.target = (Vector2) {0, 0};
+
+      if (IsKeyPressed(KEY_H)) flipH = !flipH;
+      if (IsKeyPressed(KEY_V)) flipV = !flipV;
     }
     else // Enable panning controls if neither zoom modifier was used
     {
@@ -135,7 +149,7 @@ int main(int argc, char* argv[])
     BeginDrawing();
       ClearBackground(bgColor); // Set the background as the specified color
       BeginMode2D(camera); // Use the 2D camera for panning and zooming
-        
+
         DrawTexturePro( // Draw the image with the correct zoom factor
             image, 
             (Rectangle) {0, 0, image.width, image.height}, 
