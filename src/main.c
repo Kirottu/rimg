@@ -23,7 +23,7 @@ void PrintHelp()
 }
 
 int main(int argc, char* argv[])
-{
+{ 
   int imagePathIndex = 1; // Varibale to store the index of the path in argv[] that will be used for the image
   Color bgColor = BLACK; // Default bg to BLACK if no argument for that is provided
   Texture2D image;
@@ -132,7 +132,6 @@ int main(int argc, char* argv[])
         float imgWidthToWin = (float) GetScreenWidth() / image.width;
         float imgHeightToWin = (float) GetScreenHeight() / image.height;
         
-        // reijo on hyvä tyyppi
         // Check for the correct ratio to set to the zoom factor
         if (imgWidthToWin < imgHeightToWin)
         {
