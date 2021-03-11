@@ -64,26 +64,11 @@ int main(int argc, char* argv[])
     }
     // Different color options
     // God I wish one could switch on strings in C
-    if (!strcmp(argv[2], "black"))
-    {
-      bgColor = BLACK;
-    }
-    else if (!strcmp(argv[2], "white"))
-    {
-      bgColor = WHITE;
-    }
-    else if (!strcmp(argv[2], "lightgray"))
-    {
-      bgColor = LIGHTGRAY;
-    }
-    else if (!strcmp(argv[2], "gray"))
-    {
-      bgColor = GRAY;
-    }
-    else if (!strcmp(argv[2], "darkgray"))
-    {
-      bgColor = DARKGRAY;
-    }
+    if (!strcmp(argv[2], "black"))          bgColor = BLACK;
+    else if (!strcmp(argv[2], "white"))     bgColor = WHITE;
+    else if (!strcmp(argv[2], "lightgray")) bgColor = LIGHTGRAY;
+    else if (!strcmp(argv[2], "gray"))      bgColor = GRAY;
+    else if (!strcmp(argv[2], "darkgray"))  bgColor = DARKGRAY;
     else
     {
       printf("Invalid color input\n\n");
