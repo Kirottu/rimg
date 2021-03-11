@@ -77,11 +77,11 @@ int main(int argc, char* argv[])
     }
     imagePathIndex = 3; // Setting the index for what string to read from argv to load image from
   }
-  else if (!strcmp(argv[1], "--arte"))
+  else if (!strcmp(argv[1], "--arte")) // Obligatory easter egg
   {
     for (int i = 0; i < 69; i++)
     {
-      printf("ARTE OMEGA GEH\n");
+      printf("ARTE OMEGA GEH\n"); // He do be tho
       sleep(1); 
     }
     return 0;
@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
   image = LoadTextureFromImage(imageImage);
   UnloadImage(imageImage);
   
+  // The rectangle to be used in texture drawing and flipping manipulation
   Rectangle srcRect = {0, 0, image.width, image.height};
 
   while (!WindowShouldClose())
@@ -124,20 +125,38 @@ int main(int argc, char* argv[])
       // Autofitting image to the window
       if (IsKeyPressed(KEY_Z))
       {
-
+        // Reset panningto align image properly
+        camera.target = (Vector2) {0, 0};
+        
+        // Get the ratios of Window height and width to image height and width
+        float imgWidthToWin = (float) GetScreenWidth() / image.width;
+        float imgHeightToWin = (float) GetScreenHeight() / image.height;
+        
+        // reijo on hyvä tyyppi
+        // Check for the correct ratio to set to the zoom factor
+        if (imgWidthToWin < imgHeightToWin)
+        {
+          zoomFactor = imgWidthToWin;
+        }
+        else
+        {
+          zoomFactor = imgHeightToWin;
+        }
       }
     }
-    else // Enable panning controls if neither zoom modifier was used
+    else // Enable panning controls if neither Ctrl key is pressed
     {
-      Vector2 input = {0, 0};
+      Vector2 input = {0, 0}; // Vector to store he inputs, avoiding the "if hell"
 
       input.y -= IsKeyDown(KEY_UP);
       input.y += IsKeyDown(KEY_DOWN);
       input.x -= IsKeyDown(KEY_LEFT);
       input.x += IsKeyDown(KEY_RIGHT);
 
-      input = Vector2Scale(input, panSpeed * deltaTime);
+      // Make sure the speed of panning is always the same with the frame time
+      input = Vector2Scale(input, panSpeed * deltaTime); 
       
+      // Actually change cameras position
       camera.target.x += input.x;
       camera.target.y += input.y;
     }
